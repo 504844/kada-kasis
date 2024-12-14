@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  @apply bg-gray-50 text-gray-800;
+}
+
+.container {
+  @apply mx-auto px-4;
+  max-width: 1600px;
+}
+
+.game-card {
+  @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200;
+}
+
+.league-button {
+  @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200;
+}
+
+.league-button:hover {
+  @apply transform scale-105;
+}
+
+.favorite-button {
+  @apply transition-colors duration-200;
+}
+
+.favorite-button:hover {
+  @apply transform scale-110;
+}
+
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
