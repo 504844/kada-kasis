@@ -69,12 +69,12 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
       <div className="relative z-10 flex items-center justify-between px-4 mt-3">
         {/* Home */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="w-8 h-8 flex items-center justify-center">
+          <div className="w-6 h-6 flex items-center justify-center">
             {/* Drop shadow added to ensure black logos are visible on dark bg */}
             <img
               src={game.homeTeam.logo}
               alt={game.homeTeam.name}
-              className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)]"
+              className="w-full h-full object-contain]"
             />
           </div>
           <span className="text-sm font-bold font-mono leading-none text-white">
@@ -86,11 +86,11 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
 
         {/* Away */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="w-8 h-8 flex items-center justify-center">
+          <div className="w-6 h-6 flex items-center justify-center">
             <img
               src={game.awayTeam.logo}
               alt={game.awayTeam.name}
-              className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)]"
+              className="w-full h-full object-contain]"
             />
           </div>
           <span className="text-sm font-bold font-mono leading-none text-white">
