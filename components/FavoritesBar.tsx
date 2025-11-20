@@ -44,10 +44,10 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="group relative flex flex-col justify-center bg-[#09090b]/60 backdrop-blur-md border border-white/5 rounded-xl h-[80px] min-w-[140px] overflow-hidden transition-all duration-300 shadow-lg"
+      className="group relative flex flex-col justify-center bg-[#09090b]/40 backdrop-blur-md border border-white/5 rounded-xl h-[80px] min-w-[140px] overflow-hidden transition-all duration-300 shadow-lg"
     >
       {/* Mesh Texture */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:8px_8px] pointer-events-none z-0"></div>
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:5px_5px] pointer-events-none z-0"></div>
 
       {/* Header Area: Time & Status */}
       <div className="absolute top-2 w-full px-3 z-10 flex items-center pointer-events-none">
