@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FilterOption } from '../types';
-import { X, Star, LayoutGrid, List } from 'lucide-react';
+import { X, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FilterBarProps {
@@ -11,8 +11,6 @@ interface FilterBarProps {
   onClearTeamFilter: () => void;
   favoriteTeams?: string[];
   onUnfavoriteTeam?: (team: string) => void;
-  viewMode: 'grid' | 'table';
-  onToggleViewMode: (mode: 'grid' | 'table') => void;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({ 
@@ -23,8 +21,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onClearTeamFilter,
   favoriteTeams = [],
   onUnfavoriteTeam,
-  viewMode,
-  onToggleViewMode
 }) => {
   
   const leagueFilters = useMemo(() => filters.filter(f => f.type === 'league'), [filters]);
@@ -33,10 +29,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   return (
     <div className="flex flex-col gap-2 px-6 mb-6 mt-6 max-w-7xl mx-auto">
       
-      {/* Primary Row: Leagues & View Toggle */}
+      {/* Primary Row: Leagues */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         {/* League Scroll Container */}
-        <div className="relative group flex-1 w-full md:w-auto min-w-0">
+        <div className="relative group flex-1 w-full min-w-0">
           <div className="flex gap-3 overflow-x-auto py-4 px-1 scrollbar-hide items-center">
             {leagueFilters.map((filter) => (
               <motion.button
@@ -55,24 +51,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               </motion.button>
             ))}
           </div>
-        </div>
-
-        {/* View Toggle */}
-        <div className="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5 shrink-0">
-            <button 
-                onClick={() => onToggleViewMode('grid')}
-                className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
-                title="Tinklelis"
-            >
-                <LayoutGrid size={16} />
-            </button>
-            <button 
-                onClick={() => onToggleViewMode('table')}
-                className={`p-2 rounded-md transition-all ${viewMode === 'table' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
-                title="Sąrašas"
-            >
-                <List size={16} />
-            </button>
         </div>
       </div>
 
@@ -95,22 +73,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 {filter.label}
             </motion.button>
             ))}
-        </div>
-
-        {/* Mobile View Toggle (Visible only on small screens) */}
-        <div className="flex md:hidden items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5 shrink-0">
-            <button 
-                onClick={() => onToggleViewMode('grid')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
-            >
-                <LayoutGrid size={14} />
-            </button>
-            <button 
-                onClick={() => onToggleViewMode('table')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
-            >
-                <List size={14} />
-            </button>
         </div>
       </div>
       

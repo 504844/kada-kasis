@@ -5,6 +5,7 @@ import { FilterBar } from './components/FilterBar';
 import { GameCard } from './components/GameCard';
 import { GameTable } from './components/GameTable';
 import { SettingsModal } from './components/SettingsModal';
+import { Footer } from './components/Footer';
 import { INITIAL_FILTERS } from './constants';
 import { FilterOption, Game } from './types';
 import { useBasketballData } from './hooks/useBasketballData';
@@ -235,16 +236,6 @@ export default function App() {
             if (isSameDay) matchesAnyTime = true;
           }
           
-          // Logic:
-          // If we have Status filters only: must match status
-          // If we have Time filters only: must match time
-          // If we have BOTH: It's usually an OR within this group (e.g. "Today" OR "Live") for user convenience, 
-          // BUT the prompt requested "Strict Intersection". 
-          // However, "Today" and "Live" often overlap. 
-          // Let's treat the Time/Status group as a Union (OR) internally, but the Group vs League is Intersection (AND).
-          // So if I select "Today" and "Live", show games that are Today OR Live. 
-          // If I select "Euroleague" AND ("Today" OR "Live"), show Euroleague games that are Today OR Live.
-          
           if (statusFilters.length > 0 && timeFilters.length === 0) {
               matchesTimeStatusFilter = matchesAnyStatus;
           } else if (timeFilters.length > 0 && statusFilters.length === 0) {
@@ -310,13 +301,15 @@ export default function App() {
   }, [games, favoriteTeams]);
 
   return (
-    <div className="min-h-screen text-zinc-100 selection:bg-white selection:text-black">
+    <div className="min-h-screen text-zinc-100 selection:bg-white selection:text-black flex flex-col">
       
       <Header 
         toggleSettings={() => setIsSettingsOpen(true)}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
       />
 
-      <main className="pb-24 pt-2">
+      <main className="flex-1 pb-12 pt-2">
         
         <AnimatePresence>
           {favoriteGames.length > 0 && (
@@ -343,8 +336,6 @@ export default function App() {
           onClearTeamFilter={() => setActiveTeamFilter(null)}
           favoriteTeams={favoriteTeams}
           onUnfavoriteTeam={(team) => toggleFavoriteTeam(team)}
-          viewMode={viewMode}
-          onToggleViewMode={setViewMode}
         />
 
         {loading && (
@@ -422,6 +413,8 @@ export default function App() {
         )}
 
       </main>
+
+      <Footer />
 
       <SettingsModal 
         isOpen={isSettingsOpen} 

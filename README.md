@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# portas.vercel.app
 
-# Run and deploy your AI Studio app
+A minimalist, high-performance basketball score tracker built for speed and aesthetics. Designed with a "Cyber-Noir" visual identity inspired by tactical data terminals.
 
-This contains everything you need to run your app locally.
+## Core Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1faaFdTbHgxC7IC_unrIhYwd9S3pYlR0i
+- **Live Telemetry:** Real-time scores and game status for Euroleague, LKL, NBA, and more.
+- **Tactical UI:** Custom "Ticket-Stub" card design with procedural barcodes and dynamic tension gauges.
+- **Smart Filtering:** Intersection-based logic to drill down by League AND Time (e.g., "Euroleague" + "Today").
+- **Clutch Mode:** Visual indicators (Heartbeat animations) triggered automatically during close games in the 4th quarter.
+- **Local-First:** Favorites, view modes, and league preferences are persisted instantly to local storage.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Engine:** React 18 + TypeScript + Vite
+- **Styling:** Tailwind CSS (Custom utility architecture)
+- **Animation:** Framer Motion (Layout transitions, entrance effects)
+- **Icons:** Lucide React
 
+## Architecture
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **No UI Libraries:** Every component (Modals, Toggles, Cards) is custom-built for precise control over the "Noir" aesthetic.
+- **Performance:** Aggressive memoization and deep-comparison state updates to prevent unnecessary re-renders during data polling.
+
+## Setup
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start development server:
+   ```bash
+   npm run dev
+   ```
+
