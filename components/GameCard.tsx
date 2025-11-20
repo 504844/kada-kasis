@@ -108,7 +108,7 @@ export const GameCard: React.FC<GameCardProps> = ({
       if (game.quarter) return `GYVAI • ${game.quarter}`;
       return "GYVAI";
     }
-    if (game.status === "final") return "OFICIALIOS RUNGTYNĖS";
+    if (game.status === "final") return "BAIGĖSI";
     return formatGameTime();
   };
 

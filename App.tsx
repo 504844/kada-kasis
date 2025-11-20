@@ -188,15 +188,15 @@ export default function App() {
         }
       }
 
-      // 3. Bar Filters (The Hybrid Logic)
+      // 3. Bar Filters (Strict Intersection Logic)
       const leagueFilters = filters.filter(f => f.type === 'league' && f.active);
       const statusFilters = filters.filter(f => f.type === 'status' && f.active);
       const timeFilters = filters.filter(f => f.type === 'time' && f.active);
 
       // Check League Match
-      let isLeagueMatch = false;
+      let matchesLeagueFilter = true; // Default to true if no league filters active
       if (leagueFilters.length > 0) {
-         isLeagueMatch = leagueFilters.some(f => {
+         matchesLeagueFilter = leagueFilters.some(f => {
              const normLeague = game.league.toLowerCase();
              if (f.id === 'euroleague' && (normLeague.includes('euroleague') || normLeague.includes('eurolyga'))) return true;
              if (f.id === 'lkl' && normLeague.includes('lkl')) return true;
@@ -208,39 +208,61 @@ export default function App() {
       }
 
       // Check Time & Status Match
-      let matchesStatus = true;
-      if (statusFilters.length > 0) {
-          matchesStatus = false;
-          if (statusFilters.some(f => f.id === 'now') && game.status === 'live') matchesStatus = true;
-          if (statusFilters.some(f => f.id === 'not_started') && game.status === 'scheduled') matchesStatus = true;
-          if (statusFilters.some(f => f.id === 'ended') && game.status === 'final') matchesStatus = true;
-      }
-
-      let matchesTime = true;
-      if (timeFilters.some(f => f.id === 'today')) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const gameTime = new Date(game.startTime);
-
-        const isSameDay = gameTime.getDate() === today.getDate() && 
-                          gameTime.getMonth() === today.getMonth() && 
-                          gameTime.getFullYear() === today.getFullYear();
-        
-        if (!isSameDay) matchesTime = false;
-      }
-
-      const isTimeStatusMatch = matchesStatus && matchesTime;
+      // Combine Time and Status filters into one "Time/Status" group logic
+      // If ANY time or status filter is active, the game must match at least one of them
       const hasTimeStatusFilters = statusFilters.length > 0 || timeFilters.length > 0;
+      let matchesTimeStatusFilter = true; // Default to true if no time/status filters active
 
-      if (leagueFilters.length > 0) {
-          if (hasTimeStatusFilters) {
-              return isLeagueMatch || isTimeStatusMatch;
-          } else {
-              return isLeagueMatch;
+      if (hasTimeStatusFilters) {
+          let matchesAnyStatus = false;
+          let matchesAnyTime = false;
+
+          // Check Status Filters
+          if (statusFilters.length > 0) {
+              if (statusFilters.some(f => f.id === 'now') && game.status === 'live') matchesAnyStatus = true;
+              if (statusFilters.some(f => f.id === 'not_started') && game.status === 'scheduled') matchesAnyStatus = true;
+              if (statusFilters.some(f => f.id === 'ended') && game.status === 'final') matchesAnyStatus = true;
           }
-      } else {
-          return isTimeStatusMatch;
+
+          // Check Time Filters
+          if (timeFilters.some(f => f.id === 'today')) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const gameTime = new Date(game.startTime);
+            const isSameDay = gameTime.getDate() === today.getDate() && 
+                              gameTime.getMonth() === today.getMonth() && 
+                              gameTime.getFullYear() === today.getFullYear();
+            if (isSameDay) matchesAnyTime = true;
+          }
+          
+          // Logic:
+          // If we have Status filters only: must match status
+          // If we have Time filters only: must match time
+          // If we have BOTH: It's usually an OR within this group (e.g. "Today" OR "Live") for user convenience, 
+          // BUT the prompt requested "Strict Intersection". 
+          // However, "Today" and "Live" often overlap. 
+          // Let's treat the Time/Status group as a Union (OR) internally, but the Group vs League is Intersection (AND).
+          // So if I select "Today" and "Live", show games that are Today OR Live. 
+          // If I select "Euroleague" AND ("Today" OR "Live"), show Euroleague games that are Today OR Live.
+          
+          // Adjusting match logic based on active arrays:
+          const statusMatchFound = statusFilters.length > 0 && matchesAnyStatus;
+          const timeMatchFound = timeFilters.length > 0 && matchesAnyTime;
+          
+          // If both types are present, we usually want OR between them (Today OR Live).
+          // If only one type is present, we check that type.
+          if (statusFilters.length > 0 && timeFilters.length === 0) {
+              matchesTimeStatusFilter = matchesAnyStatus;
+          } else if (timeFilters.length > 0 && statusFilters.length === 0) {
+              matchesTimeStatusFilter = matchesAnyTime;
+          } else {
+              // Both active
+              matchesTimeStatusFilter = matchesAnyStatus || matchesAnyTime;
+          }
       }
+
+      // FINAL STRICT INTERSECTION: (League Group) AND (Time/Status Group)
+      return matchesLeagueFilter && matchesTimeStatusFilter;
     });
   }, [games, filters, activeTeamFilter, enabledLeagues]);
 

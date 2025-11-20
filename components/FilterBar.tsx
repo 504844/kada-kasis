@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FilterOption } from '../types';
 import { X, Star, LayoutGrid, List } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,16 +26,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   viewMode,
   onToggleViewMode
 }) => {
+  
+  const leagueFilters = useMemo(() => filters.filter(f => f.type === 'league'), [filters]);
+  const statusFilters = useMemo(() => filters.filter(f => f.type === 'status' || f.type === 'time'), [filters]);
+
   return (
-    <div className="flex flex-col gap-4 px-6 mb-8 mt-6 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-2 px-6 mb-6 mt-6 max-w-7xl mx-auto">
       
+      {/* Primary Row: Leagues & View Toggle */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Scroll container wrapper */}
+        {/* League Scroll Container */}
         <div className="relative group flex-1 w-full md:w-auto min-w-0">
-          
-          {/* Increased vertical padding to prevent shadow clipping */}
-          <div className="flex gap-3 overflow-x-auto py-4 px-6 -mx-6 scrollbar-hide items-center">
-            {filters.map((filter) => (
+          <div className="flex gap-3 overflow-x-auto py-4 px-1 scrollbar-hide items-center">
+            {leagueFilters.map((filter) => (
               <motion.button
                 key={filter.id}
                 onClick={() => onToggleFilter(filter.id)}
@@ -55,7 +58,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         {/* View Toggle */}
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5 shrink-0">
+        <div className="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5 shrink-0">
             <button 
                 onClick={() => onToggleViewMode('grid')}
                 className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
@@ -72,9 +75,47 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </button>
         </div>
       </div>
+
+      {/* Secondary Row: Status/Time Filters */}
+      <div className="flex items-center justify-between gap-4 mt-1">
+        <div className="flex gap-2 overflow-x-auto py-4 px-1 scrollbar-hide items-center flex-1">
+            {statusFilters.map((filter) => (
+            <motion.button
+                key={filter.id}
+                onClick={() => onToggleFilter(filter.id)}
+                whileTap={{ scale: 0.95 }}
+                className={`
+                relative px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wide border transition-all duration-200 shrink-0 uppercase
+                ${filter.active
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
+                    : 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600 hover:text-zinc-300'
+                }
+                `}
+            >
+                {filter.label}
+            </motion.button>
+            ))}
+        </div>
+
+        {/* Mobile View Toggle (Visible only on small screens) */}
+        <div className="flex md:hidden items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5 shrink-0">
+            <button 
+                onClick={() => onToggleViewMode('grid')}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
+            >
+                <LayoutGrid size={14} />
+            </button>
+            <button 
+                onClick={() => onToggleViewMode('table')}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
+            >
+                <List size={14} />
+            </button>
+        </div>
+      </div>
       
       {/* Active Filters / Favorites Area */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 mt-2">
         
         {/* Active Filter Drilldown */}
         {activeTeamFilter && (
