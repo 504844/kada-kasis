@@ -54,6 +54,53 @@ const UniqueBarcode = ({ id }: { id: string }) => {
   );
 };
 
+const TensionGauge = ({ homeScore, awayScore, isLive }: { homeScore: number, awayScore: number, isLive: boolean }) => {
+    if (!isLive && (homeScore === 0 && awayScore === 0)) return null;
+
+    const diff = homeScore - awayScore;
+    const maxDiff = 20; // The range at which the bar is full
+    const clampedDiff = Math.max(-maxDiff, Math.min(maxDiff, diff));
+    
+    // Percentage from center (0 to 100)
+    const percentage = Math.abs(clampedDiff) / maxDiff * 100;
+    
+    const isHomeLeading = diff > 0;
+    const isTied = diff === 0;
+
+    return (
+        <div className="flex items-center justify-center w-full gap-1 h-1.5 mt-2 opacity-80">
+            {/* Left Side (Home) */}
+            <div className="flex-1 h-full bg-zinc-900/50 rounded-l-sm flex justify-end relative overflow-hidden">
+                {isHomeLeading && (
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${percentage}%` }}
+                        className="h-full bg-gradient-to-l from-white to-transparent opacity-80"
+                    />
+                )}
+                {/* Tick marks */}
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_2px,#000_3px)] bg-[length:4px_100%] opacity-30"></div>
+            </div>
+
+            {/* Center Marker */}
+            <div className={`w-1 h-2 rounded-full transition-colors duration-500 ${isTied && homeScore > 0 ? 'bg-white shadow-[0_0_10px_white]' : 'bg-zinc-700'}`}></div>
+
+            {/* Right Side (Away) */}
+            <div className="flex-1 h-full bg-zinc-900/50 rounded-r-sm flex justify-start relative overflow-hidden">
+                {!isHomeLeading && !isTied && (
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${percentage}%` }}
+                        className="h-full bg-gradient-to-r from-white to-transparent opacity-80"
+                    />
+                )}
+                {/* Tick marks */}
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_2px,#000_3px)] bg-[length:4px_100%] opacity-30"></div>
+            </div>
+        </div>
+    )
+}
+
 export const GameCard: React.FC<GameCardProps> = ({
   game,
   favoriteTeams,
@@ -63,13 +110,24 @@ export const GameCard: React.FC<GameCardProps> = ({
   const isHomeFavorite = favoriteTeams.includes(game.homeTeam.name);
   const isAwayFavorite = favoriteTeams.includes(game.awayTeam.name);
 
+  // Clutch logic: 4th Quarter or OT, game is live, score diff <= 5
+  const isClutch = useMemo(() => {
+      if (game.status !== 'live') return false;
+      const q = game.quarter?.toLowerCase() || "";
+      const isLateGame = q.includes('4') || q.includes('ot') || q.includes('pratęsimas');
+      const diff = Math.abs(game.homeScore - game.awayScore);
+      return isLateGame && diff <= 5;
+  }, [game]);
+
   const getStatusStripColor = () => {
+    if (isClutch) return "bg-red-500 animate-pulse";
     if (game.status === "live") return "bg-orange-500";
     if (game.status === "final") return "bg-zinc-800";
     return "bg-emerald-400";
   };
 
   const getBorderClass = () => {
+    if (isClutch) return "border-red-500/50 animate-heartbeat";
     if (game.status === "live")
       return "border-orange-500/30 hover:border-orange-500/50";
     if (game.status === "final")
@@ -78,6 +136,7 @@ export const GameCard: React.FC<GameCardProps> = ({
   };
 
   const getGradientColor = () => {
+    if (isClutch) return "from-red-600";
     if (game.status === "live") return "from-orange-500";
     if (game.status === "final") return "from-zinc-500";
     return "from-emerald-400";
@@ -217,17 +276,17 @@ export const GameCard: React.FC<GameCardProps> = ({
         className={`w-1.5 shrink-0 ${getStatusStripColor()} relative z-10`}
       ></div>
 
-      <div className="flex-1 p-5 flex flex-col min-h-[180px] relative z-10 bg-[#0a0a0a]">
+      <div className="flex-1 p-5 flex flex-col min-h-[190px] relative z-10 bg-[#0a0a0a]">
         {/* Subtle mesh texture */}
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
 
         {/* Live Indicator Background */}
         {game.status === "live" && (
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-600/10 blur-[50px] rounded-full pointer-events-none animate-pulse-slow"></div>
+          <div className={`absolute -top-20 -right-20 w-40 h-40 blur-[50px] rounded-full pointer-events-none animate-pulse-slow ${isClutch ? 'bg-red-600/20' : 'bg-orange-600/10'}`}></div>
         )}
 
         {/* Header */}
-        <div className="relative flex justify-between items-end mb-4 z-10">
+        <div className="relative flex justify-between items-end mb-3 z-10">
           <div className="flex flex-col gap-0.5">
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 truncate max-w-[150px]">
               {game.league}
@@ -237,13 +296,13 @@ export const GameCard: React.FC<GameCardProps> = ({
           <div className="flex items-center gap-2">
             {game.status === "live" && (
               <div className="relative flex h-1.5 w-1.5 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-orange-500"></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isClutch ? 'bg-red-500' : 'bg-orange-400'}`}></span>
+                <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isClutch ? 'bg-red-600' : 'bg-orange-500'}`}></span>
               </div>
             )}
             <span
               className={`text-[10px] font-bold font-mono tracking-wider ${
-                game.status === "live" ? "text-orange-500" : "text-white"
+                isClutch ? "text-red-500" : game.status === "live" ? "text-orange-500" : "text-white"
               }`}
             >
               {getStatusLabel()}
@@ -261,6 +320,10 @@ export const GameCard: React.FC<GameCardProps> = ({
             placeholderChar="H"
             isWinner={isHomeWinner}
           />
+          
+          {/* TENSION GAUGE - Ground Breaking Feature */}
+          <TensionGauge homeScore={game.homeScore} awayScore={game.awayScore} isLive={game.status !== 'scheduled'} />
+
           <TeamRow
             name={game.awayTeam.name}
             logo={game.awayTeam.logo}

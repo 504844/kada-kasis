@@ -31,6 +31,13 @@
             animation: {
               'scan': 'scan 2s linear infinite',
               'border-spin': 'border-spin 4s linear infinite',
+              'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+            },
+            keyframes: {
+              heartbeat: {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0)' },
+                '50%': { boxShadow: '0 0 20px 0 rgba(239, 68, 68, 0.3)' },
+              }
             }
           }
         }
@@ -119,6 +126,11 @@
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
+
+      @keyframes heartbeat {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.3); }
+        50% { box-shadow: 0 0 15px 0 rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.6); }
+      }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script type="importmap">
@@ -128,8 +140,6 @@
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "date-fns": "https://aistudiocdn.com/date-fns@^4.1.0",
-    "date-fns/": "https://aistudiocdn.com/date-fns@^4.1.0/",
     "framer-motion": "https://aistudiocdn.com/framer-motion@^11.18.2",
     "framer-motion/": "https://aistudiocdn.com/framer-motion@^11.18.2/"
   }

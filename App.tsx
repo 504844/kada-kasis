@@ -245,12 +245,6 @@ export default function App() {
           // So if I select "Today" and "Live", show games that are Today OR Live. 
           // If I select "Euroleague" AND ("Today" OR "Live"), show Euroleague games that are Today OR Live.
           
-          // Adjusting match logic based on active arrays:
-          const statusMatchFound = statusFilters.length > 0 && matchesAnyStatus;
-          const timeMatchFound = timeFilters.length > 0 && matchesAnyTime;
-          
-          // If both types are present, we usually want OR between them (Today OR Live).
-          // If only one type is present, we check that type.
           if (statusFilters.length > 0 && timeFilters.length === 0) {
               matchesTimeStatusFilter = matchesAnyStatus;
           } else if (timeFilters.length > 0 && statusFilters.length === 0) {
