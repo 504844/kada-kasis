@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="lt" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sportas.vercel.app</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            colors: {
+              background: '#050505',
+              surface: '#0a0a0a',
+              court: '#1a1a1a',
+            },
+            boxShadow: {
+              'glow-white': '0 0 20px -5px rgba(255, 255, 255, 0.1)',
+              'glow-orange': '0 0 20px -5px rgba(249, 115, 22, 0.2)',
+              'glow-cyan': '0 0 20px -5px rgba(34, 211, 238, 0.2)',
+            },
+            backgroundImage: {
+              'wood-pattern': "url('data:image/svg+xml,%3Csvg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 20 20\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'%23151515\\' fill-opacity=\\'0.4\\' fill-rule=\\'evenodd\\'%3E%3Ccircle cx=\\'3\\' cy=\\'3\\' r=\\'3\\'/%3E%3Ccircle cx=\\'13\\' cy=\\'13\\' r=\\'3\\'/%3E%3C/g%3E%3C/svg%3E')",
+              'barcode': "repeating-linear-gradient(90deg, currentColor 0, currentColor 1px, transparent 1px, transparent 3px)"
+            },
+            animation: {
+              'scan': 'scan 2s linear infinite',
+              'border-spin': 'border-spin 4s linear infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #050505;
+        color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      /* Atmosphere: Static Noise Grain */
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.3;
+      }
+
+      /* Court Ambience - Detail 1: Wood Grain Texture overlay */
+      .court-texture {
+        position: fixed;
+        inset: 0;
+        background-image: 
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 60px),
+            linear-gradient(to bottom, #050505 0%, #080808 100%);
+        z-index: -2;
+        pointer-events: none;
+      }
+
+      /* Court Ambience - Detail 2: Stadium Spotlights */
+      .stadium-lights {
+        position: fixed;
+        top: -20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120vw;
+        height: 60vh;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+
+      /* Court Ambience - Detail 3: Floor Markings (SVG) */
+      .court-lines {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1.5);
+        width: 100%;
+        height: 100%;
+        opacity: 0.03;
+        z-index: -2;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' viewBox='0 0 1000 600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1000' height='600' fill='none'/%3E%3Ccircle cx='500' cy='300' r='80' stroke='white' stroke-width='2' fill='none'/%3E%3Cpath d='M50 50 L950 50 L950 550 L50 550 Z' stroke='white' stroke-width='2' fill='none'/%3E%3Cpath d='M50 220 A 150 150 0 0 1 50 380' stroke='white' stroke-width='2' fill='none'/%3E%3Cpath d='M950 220 A 150 150 0 0 0 950 380' stroke='white' stroke-width='2' fill='none'/%3E%3Cpath d='M500 50 L500 550' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      /* Scrollbar hiding */
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+
+      /* Animations */
+      @keyframes scan {
+        0% { left: -10%; }
+        100% { left: 110%; }
+      }
+      
+      @keyframes border-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "date-fns": "https://aistudiocdn.com/date-fns@^4.1.0",
+    "date-fns/": "https://aistudiocdn.com/date-fns@^4.1.0/",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.18.2",
+    "framer-motion/": "https://aistudiocdn.com/framer-motion@^11.18.2/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="noise-overlay"></div>
+    <div class="court-texture"></div>
+    <div class="stadium-lights"></div>
+    <div class="court-lines"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
