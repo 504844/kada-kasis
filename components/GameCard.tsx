@@ -28,7 +28,7 @@ const UniqueBarcode = ({ id }: { id: string }) => {
     const bars = useMemo(() => {
         const rng = seededRandom(id);
         const barCount = 20;
-        return Array.from({ length: barCount }).map((_, i) => ({
+        return Array.from({ length: barCount }).map(() => ({
             width: Math.floor(rng() * 3) + 1, // 1-3px
             opacity: rng() * 0.5 + 0.5, // 0.5-1.0
             height: Math.floor(rng() * 40) + 60, // 60-100% height
@@ -38,9 +38,9 @@ const UniqueBarcode = ({ id }: { id: string }) => {
 
     return (
         <div className="flex items-center h-full w-full overflow-hidden">
-            {bars.map((bar, i) => (
+            {bars.map((bar, idx) => (
                 <div 
-                    key={i}
+                    key={idx}
                     style={{ 
                         width: `${bar.width}px`, 
                         height: `${bar.height}%`, 
@@ -63,13 +63,6 @@ export const GameCard: React.FC<GameCardProps> = ({
   
   const isHomeFavorite = favoriteTeams.includes(game.homeTeam.name);
   const isAwayFavorite = favoriteTeams.includes(game.awayTeam.name);
-
-  // Status helpers
-  const getStatusColor = () => {
-    if (game.status === 'live') return 'text-orange-500';
-    if (game.status === 'final') return 'text-zinc-500';
-    return 'text-emerald-400'; // Emerald for calm start
-  };
 
   const getStatusStripColor = () => {
     if (game.status === 'live') return 'bg-orange-500';
@@ -112,7 +105,7 @@ export const GameCard: React.FC<GameCardProps> = ({
         if (game.quarter) return `GYVAI • ${game.quarter}`;
         return 'GYVAI';
     }
-    if (game.status === 'final') return 'BAIGTA';
+    if (game.status === 'final') return 'OFICIALIOS RUNGTYNĖS';
     return formatGameTime();
   }
 
