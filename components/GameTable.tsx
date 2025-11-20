@@ -1,8 +1,6 @@
 import React from 'react';
 import { Game } from '../types';
 import { Star } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { lt } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 
 interface GameTableProps {
@@ -20,15 +18,21 @@ export const GameTable: React.FC<GameTableProps> = ({
 }) => {
 
   const formatGameTime = (game: Game) => {
-    const date = parseISO(game.startTime);
+    const date = new Date(game.startTime);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const isToday = date.getTime() >= today.getTime() && date.getTime() < today.getTime() + 86400000;
     
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
     if (isToday) {
-        return format(date, 'HH:mm');
+        return `${hours}:${minutes}`;
     }
-    return format(date, 'MM-dd HH:mm', { locale: lt });
+    
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${month}-${day} ${hours}:${minutes}`;
   };
 
   const getStatusLabel = (game: Game) => {

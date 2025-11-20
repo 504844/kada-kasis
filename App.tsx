@@ -8,7 +8,6 @@ import { SettingsModal } from './components/SettingsModal';
 import { INITIAL_FILTERS } from './constants';
 import { FilterOption, Game } from './types';
 import { useBasketballData } from './hooks/useBasketballData';
-import { parseISO } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Separate component for game list to prevent re-renders of the list when parent state changes (like adding favorites)
@@ -221,7 +220,7 @@ export default function App() {
       if (timeFilters.some(f => f.id === 'today')) {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const gameTime = parseISO(game.startTime);
+        const gameTime = new Date(game.startTime);
 
         const isSameDay = gameTime.getDate() === today.getDate() && 
                           gameTime.getMonth() === today.getMonth() && 
@@ -261,7 +260,7 @@ export default function App() {
         groups.finished.push(game);
       } else {
         // Scheduled
-        const date = parseISO(game.startTime);
+        const date = new Date(game.startTime);
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         

@@ -1,8 +1,6 @@
 import React from 'react';
 import { Game } from '../types';
-import { format, parseISO } from 'date-fns';
-import { lt } from 'date-fns/locale';
-import { Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FavoritesBarProps {
   games: Game[];
@@ -10,9 +8,12 @@ interface FavoritesBarProps {
 }
 
 const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
-  const getGameDate = () => parseISO(game.startTime);
+  const getGameDate = () => new Date(game.startTime);
 
   const getRelativeLabel = () => {
+    if (game.status === 'live') return game.quarter || 'GYVAI';
+    if (game.status === 'final') return 'BAIGTA';
+
     const date = getGameDate();
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -21,43 +22,81 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
     
     const gameDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     
-    if (gameDate.getTime() === today.getTime()) return 'Šiandien';
+    if (gameDate.getTime() === today.getTime()) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
     if (gameDate.getTime() === tomorrow.getTime()) return 'Rytoj';
-    return format(date, 'MM-dd', { locale: lt });
+    
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${month}-${day}`;
   };
 
-  const isLive = game.status === 'live';
-
   return (
-    <div className="group relative flex flex-col items-center justify-center bg-black border border-zinc-800 rounded-xl p-4 min-w-[140px] h-[90px] hover:border-white/20 hover:shadow-glow-white transition-all duration-300 shrink-0 overflow-hidden cursor-default">
-      
-      {/* Subtle Glow BG */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <motion.div 
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="group relative flex flex-col justify-center bg-[#09090b]/60 backdrop-blur-md border border-white/5 rounded-xl h-[80px] min-w-[140px] overflow-hidden hover:bg-white/5 transition-all duration-300 shadow-lg"
+    >
+        {/* Mesh Texture */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:8px_8px] pointer-events-none z-0"></div>
 
-      {isLive && (
-        <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse"></div>
-      )}
-      
-      <div className="relative z-10 flex items-center gap-1.5 mb-3 opacity-60 group-hover:opacity-100 transition-opacity">
-        <Star size={10} className="fill-white text-white" />
-        <span className="text-[10px] font-bold tracking-widest text-white uppercase">{getRelativeLabel()}</span>
-      </div>
-      
-      <div className="relative z-10 flex items-center justify-between w-full px-1 gap-3">
-         <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center p-0.5 shadow-md shrink-0">
-            <img src={game.homeTeam.logo} alt={game.homeTeam.name} className="w-full h-full object-contain" />
-         </div>
-         <span className="text-[10px] text-zinc-600 font-bold tracking-widest">VS</span>
-         <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center p-0.5 shadow-md shrink-0">
-            <img src={game.awayTeam.logo} alt={game.awayTeam.name} className="w-full h-full object-contain" />
-         </div>
-      </div>
-      
-      <div className="relative z-10 flex justify-between w-full px-2 mt-2">
-         <span className={`text-[11px] font-mono font-bold ${isLive ? 'text-orange-500' : 'text-zinc-500 group-hover:text-zinc-300'}`}>{game.homeScore}</span>
-         <span className={`text-[11px] font-mono font-bold ${isLive ? 'text-orange-500' : 'text-zinc-500 group-hover:text-zinc-300'}`}>{game.awayScore}</span>
-      </div>
-    </div>
+        {/* Header Area: Time & Status */}
+        <div className="absolute top-2 w-full px-3 z-10 flex items-center pointer-events-none">
+             {game.status === 'live' ? (
+                 <>
+                    <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider text-left flex-1">
+                        {getRelativeLabel()}
+                    </span>
+                    <div className="h-1.5 w-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>
+                 </>
+             ) : (
+                 <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-wider w-full text-center">
+                    {getRelativeLabel()}
+                 </span>
+             )}
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center justify-between px-4 mt-3">
+            
+            {/* Home */}
+            <div className="flex flex-col items-center gap-1.5">
+                <div className="w-8 h-8 flex items-center justify-center">
+                    {/* Drop shadow added to ensure black logos are visible on dark bg */}
+                    <img 
+                        src={game.homeTeam.logo} 
+                        alt={game.homeTeam.name} 
+                        className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)]" 
+                    />
+                </div>
+                <span className="text-sm font-bold font-mono leading-none text-white">
+                    {game.homeScore}
+                </span>
+            </div>
+
+            <div className="h-6 w-px bg-white/5 mx-1"></div>
+
+            {/* Away */}
+            <div className="flex flex-col items-center gap-1.5">
+                <div className="w-8 h-8 flex items-center justify-center">
+                     <img 
+                        src={game.awayTeam.logo} 
+                        alt={game.awayTeam.name} 
+                        className="w-full h-full object-contain drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)]" 
+                    />
+                </div>
+                <span className="text-sm font-bold font-mono leading-none text-white">
+                    {game.awayScore}
+                </span>
+            </div>
+        </div>
+
+    </motion.div>
   );
 };
 
@@ -70,13 +109,15 @@ export const FavoritesBar: React.FC<FavoritesBarProps> = ({ games }) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto overflow-x-auto pb-6 pt-2 px-6 scrollbar-hide">
-      <div className="flex items-center gap-4">
-        {sortedGames.map((game) => (
-          <FavoriteCard 
-            key={game.id} 
-            game={game} 
-          />
-        ))}
+      <div className="flex items-center gap-3">
+        <AnimatePresence mode='popLayout'>
+            {sortedGames.map((game) => (
+            <FavoriteCard 
+                key={game.id} 
+                game={game} 
+            />
+            ))}
+        </AnimatePresence>
       </div>
     </div>
   );
