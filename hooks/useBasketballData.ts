@@ -22,9 +22,36 @@ function getGameStatus(status: string, isLive: string): Game['status'] {
   return 'live';
 }
 
+function parseLiveStatus(fullStatus: string, quarter: string): string {
+  if (!fullStatus) return quarter;
+  
+  // Remove "GYVAI." prefix (case insensitive, handling space)
+  let s = fullStatus.replace(/^GYVAI\.?\s*/i, '');
+
+  // Compact Quarter Names
+  s = s.replace('I kėlinys', '1 kėl')
+       .replace('II kėlinys', '2 kėl')
+       .replace('III kėlinys', '3 kėl')
+       .replace('IV kėlinys', '4 kėl')
+       .replace('Pratęsimas', 'OT');
+  
+  // Compact Minutes: "2 min." -> "2'"
+  s = s.replace(/(\d+)\s*min\.?/gi, "$1'");
+
+  // Cleanup
+  s = s.replace(/,/g, '').replace(/\s+/g, ' ').trim();
+
+  return s || quarter;
+}
+
 function transformApiGame(apiGame: ApiGame): Game {
   const status = getGameStatus(apiGame.event_status, apiGame.is_live);
   
+  let quarter = apiGame.event_quarter;
+  if (status === 'live') {
+      quarter = parseLiveStatus(apiGame.full_status, apiGame.event_quarter);
+  }
+
   return {
     id: apiGame.event_key,
     homeTeam: {
@@ -43,7 +70,7 @@ function transformApiGame(apiGame: ApiGame): Game {
     startTime: new Date(parseInt(apiGame.event_timestamp) * 1000).toISOString(),
     league: apiGame.league_name,
     date: apiGame.day_filter,
-    quarter: apiGame.event_quarter
+    quarter
   };
 }
 

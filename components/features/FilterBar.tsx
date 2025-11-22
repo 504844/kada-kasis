@@ -27,13 +27,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   const statusFilters = useMemo(() => filters.filter(f => f.type === 'status' || f.type === 'time'), [filters]);
 
   return (
-    <div className="flex flex-col gap-2 px-6 mb-6 mt-6 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-2 px-6 mb-6 mt-2 max-w-7xl mx-auto">
       
       {/* Primary Row: Leagues */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         {/* League Scroll Container */}
         <div className="relative group flex-1 w-full min-w-0">
-          <div className="flex gap-3 overflow-x-auto py-4 px-1 scrollbar-hide items-center">
+          <div className="flex gap-3 overflow-x-auto py-1.5 px-1 scrollbar-hide items-center">
             {leagueFilters.map((filter) => (
               <motion.button
                 key={filter.id}
@@ -56,14 +56,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
       {/* Secondary Row: Status/Time Filters */}
       <div className="flex items-center justify-between gap-4 mt-1">
-        <div className="flex gap-2 overflow-x-auto py-4 px-1 scrollbar-hide items-center flex-1">
+        <div className="flex gap-2 overflow-x-auto py-1.5 px-1 scrollbar-hide items-center flex-1">
             {statusFilters.map((filter) => (
             <motion.button
                 key={filter.id}
                 onClick={() => onToggleFilter(filter.id)}
                 whileTap={{ scale: 0.95 }}
                 className={`
-                relative px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wide border transition-all duration-200 shrink-0 uppercase
+                relative px-2.5 py-1 rounded-full text-[9px] font-semibold tracking-wide border transition-all duration-200 shrink-0 uppercase
                 ${filter.active
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
                     : 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600 hover:text-zinc-300'

@@ -45,11 +45,26 @@ export const GameCard: React.FC<GameCardProps> = ({
     return "border-emerald-500/30 hover:border-emerald-500/50";
   };
 
+  const variants = {
+    hidden: { 
+      opacity: 0, 
+      y: 12, 
+      filter: "blur(12px)" 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.6,
+        ease: [0.25, 0.4, 0.25, 1] as const // Premium cubic-bezier easing
+      }
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, filter: "blur(8px)" }}
-      animate={{ opacity: 1, filter: "blur(0px)" }}
-      transition={{ duration: 0.4 }}
+      variants={variants}
       className={`group relative bg-[#0a0a0a] border rounded-2xl transition-all duration-300 overflow-hidden flex shadow-lg ${getBorderClass()}`}
     >
       <GameCardEffects status={game.status} isClutch={isClutch} />

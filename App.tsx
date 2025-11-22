@@ -12,8 +12,28 @@ import { useBasketballData } from './hooks/useBasketballData';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GameCardSkeleton } from './components/skeletons/GameCardSkeleton';
 
+// Container variants for staggering children
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+interface GameSectionProps {
+  title: string;
+  games: Game[];
+  viewMode: 'grid' | 'table';
+  favoriteTeams: string[];
+  toggleFavoriteTeam: (teamName: string) => void;
+  setActiveTeamFilter: (name: string | null) => void;
+}
+
 // Separate component for game list to prevent re-renders of the list when parent state changes (like adding favorites)
-const GameSection = React.memo(({ title, games, viewMode, favoriteTeams, toggleFavoriteTeam, setActiveTeamFilter }: any) => (
+const GameSection = React.memo(({ title, games, viewMode, favoriteTeams, toggleFavoriteTeam, setActiveTeamFilter }: GameSectionProps) => (
     <div className="flex flex-col gap-4">
        <div className="flex items-center gap-3 px-1">
             <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent"></div>
@@ -22,7 +42,12 @@ const GameSection = React.memo(({ title, games, viewMode, favoriteTeams, toggleF
        </div>
        
        {viewMode === 'grid' ? (
-           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+           <motion.div 
+             variants={containerVariants}
+             initial="hidden"
+             animate="visible"
+             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+           >
                {games.map((game: Game) => (
                    <GameCard 
                        key={game.id} 
@@ -35,7 +60,7 @@ const GameSection = React.memo(({ title, games, viewMode, favoriteTeams, toggleF
                        }}
                    />
                ))}
-           </div>
+           </motion.div>
        ) : (
            <GameTable 
                games={games}

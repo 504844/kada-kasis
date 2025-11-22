@@ -25,10 +25,10 @@ export const GameCardTeamRow: React.FC<TeamRowProps> = ({
   onFilterByTeam,
 }) => {
   return (
-    <div className="flex items-center justify-between group/row py-2 px-1 relative z-10">
-      <div className="flex items-center gap-3 min-w-0">
-        {/* Logo */}
-        <div className="relative w-8 h-8 flex items-center justify-center">
+    <div className="flex items-center justify-between group/row py-1.5 md:py-2 px-1 relative z-10">
+      <div className="flex items-center gap-1.5 md:gap-3 min-w-0">
+        {/* Logo - Smaller on mobile */}
+        <div className="relative w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
           <img
             src={logo}
             alt={name}
@@ -42,14 +42,14 @@ export const GameCardTeamRow: React.FC<TeamRowProps> = ({
           />
         </div>
 
-        {/* Name */}
-        <div className="flex items-center gap-2">
+        {/* Name - Smaller Text on mobile */}
+        <div className="flex items-center gap-1.5 md:gap-2">
           <span
             onClick={(e) => {
               e.stopPropagation();
               onFilterByTeam();
             }}
-            className={`text-sm md:text-base font-bold tracking-tight cursor-pointer transition-all duration-300 truncate ${
+            className={`text-xs md:text-base font-bold tracking-tight cursor-pointer transition-all duration-300 truncate ${
               isWinner ? "text-white" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
@@ -77,9 +77,9 @@ export const GameCardTeamRow: React.FC<TeamRowProps> = ({
         </div>
       </div>
 
-      {/* Score */}
+      {/* Score - Responsive text size */}
       <span
-        className={`text-xl font-bold font-mono tabular-nums tracking-tighter ${
+        className={`text-lg md:text-xl font-bold font-mono tabular-nums tracking-tighter ${
           isLive
             ? "text-orange-500 drop-shadow-glow-orange"
             : isWinner
