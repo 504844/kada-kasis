@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Game, ApiGame } from '../types';
 
-const PRIMARY_API = 'https://static2.krepsinis.net/Uploads/scoreboard.js';
-const FALLBACK_API = 'https://www.sportas.lt/Uploads/scoreboard.js';
+const API_URLS = [
+  'https://static2.krepsinis.net/Uploads/scoreboard.js',
+  'https://www.sportas.lt/Uploads/scoreboard.js'
+];
+
+const PROXY_URL = 'https://api.allorigins.win/raw?url=';
 
 function getFullLogoUrl(logo: string): string {
   if (!logo) return '';
@@ -47,26 +51,66 @@ export function useBasketballData() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use refs to track mounting status to avoid state updates after unmount
+  // and to manage the timeout loop
+  const isMountedRef = useRef(true);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    isMountedRef.current = true;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
     const fetchData = async () => {
       try {
-        let response;
-        try {
-          response = await fetch(PRIMARY_API);
-        } catch (e) {
-          console.warn('Primary API failed, trying fallback');
+        const timestamp = Date.now();
+        const random = Math.floor(Math.random() * 1000000);
+        const queryParams = `?t=${timestamp}&r=${random}`;
+        
+        let data;
+        let lastError;
+
+        // 1. Try Direct Fetch
+        for (const url of API_URLS) {
+            if (signal.aborted) return;
+            try {
+                const fullUrl = `${url}${queryParams}`;
+                const res = await fetch(fullUrl, { signal });
+                if (res.ok) {
+                    data = await res.json();
+                    break;
+                }
+            } catch (e) {
+                if ((e as Error).name === 'AbortError') return;
+                lastError = e;
+            }
         }
 
-        if (!response || !response.ok) {
-          response = await fetch(FALLBACK_API);
+        // 2. Try Proxy if Direct failed
+        if (!data && !signal.aborted) {
+             for (const url of API_URLS) {
+                if (signal.aborted) return;
+                try {
+                    const fullUrl = `${url}${queryParams}`;
+                    const proxyUrl = `${PROXY_URL}${encodeURIComponent(fullUrl)}`;
+                    const res = await fetch(proxyUrl, { signal });
+                    if (res.ok) {
+                        data = await res.json();
+                        break;
+                    }
+                } catch (e) {
+                    if ((e as Error).name === 'AbortError') return;
+                    lastError = e;
+                }
+            }
         }
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch data from both APIs');
-        }
+        if (!isMountedRef.current) return;
 
-        const data = await response.json();
+        if (!data) {
+          throw lastError || new Error('Nepavyko gauti duomenų iš serverio.');
+        }
         
         let rawGames: ApiGame[] = [];
         if (data && Array.isArray(data.games)) {
@@ -79,7 +123,6 @@ export function useBasketballData() {
 
         const processedGames = rawGames.map(transformApiGame);
         
-        // Smart update: Only update state if data has actually changed
         setGames(prevGames => {
           if (JSON.stringify(prevGames) === JSON.stringify(processedGames)) {
             return prevGames;
@@ -89,17 +132,29 @@ export function useBasketballData() {
         
         setError(null);
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        if (isMountedRef.current && (err as Error).name !== 'AbortError') {
+            console.error("Fetch error:", err);
+            setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        }
       } finally {
-        // Only set loading to false on the very first fetch
-        setLoading(prev => prev ? false : prev);
+        if (isMountedRef.current) {
+            setLoading(prev => prev ? false : prev);
+            // Schedule next fetch only after the current one completes
+            // This prevents request stacking on slow connections
+            timeoutRef.current = setTimeout(fetchData, 10000);
+        }
       }
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
+
+    return () => {
+        isMountedRef.current = false;
+        abortController.abort();
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+    };
   }, []);
 
   return { games, loading, error };

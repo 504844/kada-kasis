@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 // Deterministic pseudo-random number generator based on string seed
 const seededRandom = (seed: string) => {

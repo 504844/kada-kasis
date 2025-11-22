@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Header } from './components/Header';
-import { FavoritesBar } from './components/FavoritesBar';
-import { FilterBar } from './components/FilterBar';
-import { GameCard } from './components/GameCard';
-import { GameTable } from './components/GameTable';
-import { SettingsModal } from './components/SettingsModal';
-import { Footer } from './components/Footer';
+import { Header } from './components/layout/Header';
+import { FavoritesBar } from './components/features/FavoritesBar';
+import { FilterBar } from './components/features/FilterBar';
+import { GameCard } from './components/game-card/GameCard';
+import { GameTable } from './components/features/GameTable';
+import { SettingsModal } from './components/features/SettingsModal';
+import { Footer } from './components/layout/Footer';
 import { INITIAL_FILTERS } from './constants';
 import { FilterOption, Game } from './types';
 import { useBasketballData } from './hooks/useBasketballData';
 import { AnimatePresence, motion } from 'framer-motion';
+import { GameCardSkeleton } from './components/skeletons/GameCardSkeleton';
 
 // Separate component for game list to prevent re-renders of the list when parent state changes (like adding favorites)
 const GameSection = React.memo(({ title, games, viewMode, favoriteTeams, toggleFavoriteTeam, setActiveTeamFilter }: any) => (
@@ -338,25 +339,18 @@ export default function App() {
           onUnfavoriteTeam={(team) => toggleFavoriteTeam(team)}
         />
 
-        {loading && (
-            <div className="flex justify-center py-32">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full border-2 border-zinc-800"></div>
-                  <div className="absolute top-0 left-0 w-10 h-10 rounded-full border-t-2 border-white animate-spin"></div>
-                </div>
-            </div>
-        )}
-
-        {error && !loading && (
+        {loading ? (
+             <div className="px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-8">
+                {[...Array(6)].map((_, i) => <GameCardSkeleton key={i} />)}
+             </div>
+        ) : error ? (
             <div className="max-w-md mx-auto text-center py-10 px-6">
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 backdrop-blur-sm">
                   <h3 className="text-white font-medium mb-2">Ryšio klaida</h3>
                   <p className="text-zinc-500 text-sm">{error}</p>
                 </div>
             </div>
-        )}
-
-        {!loading && !error && (
+        ) : (
             <div className="px-6 max-w-7xl mx-auto flex flex-col gap-12">
                 {filteredGames.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-32 text-center">

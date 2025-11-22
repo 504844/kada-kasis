@@ -1,4 +1,4 @@
-# portas.vercel.app
+# Kada Krepšinis?
 
 A minimalist, high-performance basketball score tracker built for speed and aesthetics. Designed with a "Cyber-Noir" visual identity inspired by tactical data terminals.
 
@@ -34,3 +34,5 @@ A minimalist, high-performance basketball score tracker built for speed and aest
    npm run dev
    ```
 
+---
+*Solution by Martin Čiurlionis*
