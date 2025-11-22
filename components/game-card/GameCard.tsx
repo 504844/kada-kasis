@@ -1,0 +1,84 @@
+import React, { useMemo } from "react";
+import { Game } from "../../types";
+import { motion } from "framer-motion";
+import { GameCardHeader } from "./GameCardHeader";
+import { GameCardFooter } from "./GameCardFooter";
+import { GameCardEffects } from "./GameCardEffects";
+import { GameCardBackground } from "./GameCardBackground";
+import { GameCardTeamSection } from "./GameCardTeamSection";
+
+interface GameCardProps {
+  game: Game;
+  favoriteTeams: string[];
+  onToggleFavoriteTeam: (teamName: string) => void;
+  onFilterByTeam: (teamName: string) => void;
+}
+
+export const GameCard: React.FC<GameCardProps> = ({
+  game,
+  favoriteTeams,
+  onToggleFavoriteTeam,
+  onFilterByTeam,
+}) => {
+  // Clutch logic: 4th Quarter or OT, game is live, score diff <= 5
+  const isClutch = useMemo(() => {
+      if (game.status !== 'live') return false;
+      const q = game.quarter?.toLowerCase() || "";
+      const isLateGame = q.includes('4') || q.includes('ot') || q.includes('pratęsimas');
+      const diff = Math.abs(game.homeScore - game.awayScore);
+      return isLateGame && diff <= 5;
+  }, [game]);
+
+  const getStatusStripColor = () => {
+    if (isClutch) return "bg-red-500 animate-pulse";
+    if (game.status === "live") return "bg-orange-500";
+    if (game.status === "final") return "bg-zinc-800";
+    return "bg-emerald-400";
+  };
+
+  const getBorderClass = () => {
+    if (isClutch) return "border-red-500/50 animate-heartbeat";
+    if (game.status === "live")
+      return "border-orange-500/30 hover:border-orange-500/50";
+    if (game.status === "final")
+      return "border-zinc-800/50 hover:border-zinc-700";
+    return "border-emerald-500/30 hover:border-emerald-500/50";
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, filter: "blur(8px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.4 }}
+      className={`group relative bg-[#0a0a0a] border rounded-2xl transition-all duration-300 overflow-hidden flex shadow-lg ${getBorderClass()}`}
+    >
+      <GameCardEffects status={game.status} isClutch={isClutch} />
+
+      {/* Vertical Status Strip */}
+      <div
+        className={`w-1.5 shrink-0 ${getStatusStripColor()} relative z-10`}
+      ></div>
+
+      <div className="flex-1 p-5 flex flex-col min-h-[190px] relative z-10 bg-[#0a0a0a]">
+        <GameCardBackground status={game.status} isClutch={isClutch} />
+
+        <GameCardHeader 
+          league={game.league}
+          status={game.status}
+          quarter={game.quarter}
+          startTime={game.startTime}
+          isClutch={isClutch}
+        />
+
+        <GameCardTeamSection 
+            game={game} 
+            favoriteTeams={favoriteTeams}
+            onToggleFavoriteTeam={onToggleFavoriteTeam}
+            onFilterByTeam={onFilterByTeam}
+        />
+
+        <GameCardFooter id={game.id} />
+      </div>
+    </motion.div>
+  );
+};
