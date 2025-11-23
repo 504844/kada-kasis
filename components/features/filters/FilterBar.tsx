@@ -42,7 +42,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 className={`
                   relative px-5 py-2.5 rounded-xl text-xs font-bold tracking-wide border transition-all duration-300 shrink-0 backdrop-blur-sm
                   ${filter.active 
-                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
+                    ? 'bg-white text-black border-white shadow-[0_0_5px_rgba(255,255,255,0.3)]' 
                     : 'bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10 hover:border-white/10 hover:text-zinc-200'
                   }
                 `}
@@ -65,7 +65,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 className={`
                 relative px-2.5 py-1 rounded-full text-[9px] font-semibold tracking-wide border transition-all duration-200 shrink-0 uppercase
                 ${filter.active
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_5px_rgba(16,185,129,0.1)]'
                     : 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600 hover:text-zinc-300'
                 }
                 `}
