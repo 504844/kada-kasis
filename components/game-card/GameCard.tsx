@@ -6,6 +6,8 @@ import { GameCardFooter } from "./GameCardFooter";
 import { GameCardEffects } from "./GameCardEffects";
 import { GameCardBackground } from "./GameCardBackground";
 import { GameCardTeamSection } from "./GameCardTeamSection";
+import { ClutchBadge } from "./ClutchBadge";
+import { isClutchGame } from "../../utils/gameUtils";
 
 interface GameCardProps {
   game: Game;
@@ -20,14 +22,8 @@ export const GameCard: React.FC<GameCardProps> = ({
   onToggleFavoriteTeam,
   onFilterByTeam,
 }) => {
-  // Clutch logic: 4th Quarter or OT, game is live, score diff <= 5
-  const isClutch = useMemo(() => {
-      if (game.status !== 'live') return false;
-      const q = game.quarter?.toLowerCase() || "";
-      const isLateGame = q.includes('4') || q.includes('ot') || q.includes('pratęsimas');
-      const diff = Math.abs(game.homeScore - game.awayScore);
-      return isLateGame && diff <= 5;
-  }, [game]);
+  // Use shared logic for consistency
+  const isClutch = useMemo(() => isClutchGame(game), [game]);
 
   const getStatusStripColor = () => {
     if (isClutch) return "bg-red-500 animate-pulse";
@@ -65,34 +61,39 @@ export const GameCard: React.FC<GameCardProps> = ({
   return (
     <motion.div
       variants={variants}
-      className={`group relative bg-[#0a0a0a] border rounded-2xl transition-all duration-300 overflow-hidden flex shadow-lg ${getBorderClass()}`}
+      className="group relative"
     >
-      <GameCardEffects status={game.status} isClutch={isClutch} />
+      {/* Badge sits outside the overflow-hidden container */}
+      {isClutch && <ClutchBadge />}
 
-      {/* Vertical Status Strip */}
-      <div
-        className={`w-1.5 shrink-0 ${getStatusStripColor()} relative z-10`}
-      ></div>
+      <div className={`relative bg-[#0a0a0a] border rounded-2xl transition-all duration-300 overflow-hidden flex shadow-lg ${getBorderClass()}`}>
+          <GameCardEffects status={game.status} isClutch={isClutch} />
 
-      <div className="flex-1 p-5 flex flex-col min-h-[190px] relative z-10 bg-[#0a0a0a]">
-        <GameCardBackground status={game.status} isClutch={isClutch} />
+          {/* Vertical Status Strip */}
+          <div
+            className={`w-1.5 shrink-0 ${getStatusStripColor()} relative z-10`}
+          ></div>
 
-        <GameCardHeader 
-          league={game.league}
-          status={game.status}
-          quarter={game.quarter}
-          startTime={game.startTime}
-          isClutch={isClutch}
-        />
+          <div className="flex-1 p-5 flex flex-col min-h-[190px] relative z-10 bg-[#0a0a0a]">
+            <GameCardBackground status={game.status} isClutch={isClutch} />
 
-        <GameCardTeamSection 
-            game={game} 
-            favoriteTeams={favoriteTeams}
-            onToggleFavoriteTeam={onToggleFavoriteTeam}
-            onFilterByTeam={onFilterByTeam}
-        />
+            <GameCardHeader 
+              league={game.league}
+              status={game.status}
+              quarter={game.quarter}
+              startTime={game.startTime}
+              isClutch={isClutch}
+            />
 
-        <GameCardFooter id={game.id} />
+            <GameCardTeamSection 
+                game={game} 
+                favoriteTeams={favoriteTeams}
+                onToggleFavoriteTeam={onToggleFavoriteTeam}
+                onFilterByTeam={onFilterByTeam}
+            />
+
+            <GameCardFooter id={game.id} />
+          </div>
       </div>
     </motion.div>
   );

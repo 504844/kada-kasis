@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Game } from "../../../types";
 import { motion, AnimatePresence } from "framer-motion";
+import { isClutchGame } from "../../../utils/gameUtils";
 
 interface FavoritesBarProps {
   games: Game[];
@@ -10,14 +11,8 @@ interface FavoritesBarProps {
 const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
   const getGameDate = () => new Date(game.startTime);
 
-  // Clutch logic: 4th Quarter or OT, game is live, score diff <= 5
-  const isClutch = useMemo(() => {
-      if (game.status !== 'live') return false;
-      const q = game.quarter?.toLowerCase() || "";
-      const isLateGame = q.includes('4') || q.includes('ot') || q.includes('pratęsimas');
-      const diff = Math.abs(game.homeScore - game.awayScore);
-      return isLateGame && diff <= 5;
-  }, [game]);
+  // Use shared logic for consistency
+  const isClutch = useMemo(() => isClutchGame(game), [game]);
 
   const getRelativeLabel = () => {
     if (game.status === "live") return game.quarter || "GYVAI";

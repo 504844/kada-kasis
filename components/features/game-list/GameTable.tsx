@@ -2,6 +2,7 @@ import React from "react";
 import { Game } from "../../../types";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { isClutchGame } from "../../../utils/gameUtils";
 
 interface GameTableProps {
   games: Game[];
@@ -69,14 +70,8 @@ export const GameTable: React.FC<GameTableProps> = ({
             const isAwayWinner =
               game.status === "final" && game.awayScore > game.homeScore;
 
-            // Clutch logic
-            const isClutch = (() => {
-                if (game.status !== 'live') return false;
-                const q = game.quarter?.toLowerCase() || "";
-                const isLateGame = q.includes('4') || q.includes('ot') || q.includes('pratęsimas');
-                const diff = Math.abs(game.homeScore - game.awayScore);
-                return isLateGame && diff <= 5;
-            })();
+            // Use shared clutch logic
+            const isClutch = isClutchGame(game);
 
             // Dynamic Row Styles
             let rowBackground = "bg-[#0a0a0a] hover:bg-zinc-900/30 transition-colors duration-200";
