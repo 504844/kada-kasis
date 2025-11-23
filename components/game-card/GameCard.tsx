@@ -37,7 +37,7 @@ export const GameCard: React.FC<GameCardProps> = ({
   };
 
   const getBorderClass = () => {
-    if (isClutch) return "border-red-500/50 animate-heartbeat";
+    if (isClutch) return "border-red-500/30 animate-heartbeat";
     if (game.status === "live")
       return "border-orange-500/30 hover:border-orange-500/50";
     if (game.status === "final")

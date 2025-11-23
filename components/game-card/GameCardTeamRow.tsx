@@ -81,7 +81,7 @@ export const GameCardTeamRow: React.FC<TeamRowProps> = ({
       <span
         className={`text-lg md:text-xl font-bold font-mono tabular-nums tracking-tighter ${
           isLive
-            ? "text-orange-500 drop-shadow-glow-orange"
+            ? "text-white drop-shadow-glow-white"
             : isWinner
             ? "text-white"
             : "text-zinc-600"

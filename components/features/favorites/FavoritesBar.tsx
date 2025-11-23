@@ -48,8 +48,9 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
   };
 
   const getBorderClass = () => {
-    if (isClutch) return "border-red-500/50 animate-heartbeat shadow-[0_0_15px_rgba(239,68,68,0.15)]";
-    if (game.status === "live") return "border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.1)]";
+    if (isClutch) return "border-red-500/30 animate-heartbeat shadow-[0_0_8px_rgba(239,68,68,0.1)]";
+    // Reduced shadow spread from 15px to 8px to match clutch max intensity
+    if (game.status === "live") return "border-orange-500/30 ]";
     return "border-white/5";
   };
 
@@ -157,6 +158,11 @@ export const FavoritesBar: React.FC<FavoritesBarProps> = ({ games }) => {
   if (games.length === 0) return null;
 
   const sortedGames = [...games].sort((a, b) => {
+    // 1. Push finalized games to the bottom
+    if (a.status === 'final' && b.status !== 'final') return 1;
+    if (a.status !== 'final' && b.status === 'final') return -1;
+    
+    // 2. Sort by time
     return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
   });
 
