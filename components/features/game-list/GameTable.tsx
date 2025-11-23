@@ -1,5 +1,5 @@
 import React from "react";
-import { Game } from "../../types";
+import { Game } from "../../../types";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 

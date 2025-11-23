@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FilterOption } from '../../types';
+import { FilterOption } from '../../../types';
 import { X, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

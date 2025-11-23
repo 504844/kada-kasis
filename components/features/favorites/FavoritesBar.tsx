@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Game } from "../../types";
+import { Game } from "../../../types";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface FavoritesBarProps {

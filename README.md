@@ -1,26 +1,50 @@
-# Kada Krepšinis?
+# Kada Krepsinis?
 
-A minimalist, high-performance basketball score tracker built for speed and aesthetics. Designed with a "Cyber-Noir" visual identity inspired by tactical data terminals.
+A minimalist, high-performance basketball score tracker built for speed and aesthetics. The design follows a "Cyber-Noir" visual identity inspired by tactical data terminals, prioritizing data density and clarity.
+
+## Project Overview
+
+This application provides real-time scores and game status for major basketball leagues including Euroleague, LKL, and the NBA. It is built to be "local-first," meaning user preferences like favorite teams and active filters are saved instantly to the browser without requiring a login.
 
 ## Core Features
 
-- **Live Telemetry:** Real-time scores and game status for Euroleague, LKL, NBA, and more.
-- **Tactical UI:** Custom "Ticket-Stub" card design with procedural barcodes and dynamic tension gauges.
-- **Smart Filtering:** Intersection-based logic to drill down by League AND Time (e.g., "Euroleague" + "Today").
-- **Clutch Mode:** Visual indicators (Heartbeat animations) triggered automatically during close games in the 4th quarter.
-- **Local-First:** Favorites, view modes, and league preferences are persisted instantly to local storage.
+- **Live Telemetry:** Real-time scores and game status updates.
+- **Tactical UI:** Custom card design with procedural barcodes and dynamic tension gauges.
+- **Smart Filtering:** Intersection-based logic allows users to drill down by League and Time simultaneously (e.g., "Euroleague" games happening "Today").
+- **Clutch Mode:** Visual indicators (heartbeat animations and color shifts) trigger automatically during close games in the 4th quarter to draw attention to high-stakes moments.
+- **Performance:** Aggressive memoization and deep-comparison state updates prevent unnecessary re-renders during data polling.
+
+## Project Structure
+
+The codebase is organized into logical domains to maintain clean separation of concerns.
+
+### Components
+The UI is split into three main categories:
+
+- **features/**: Contains high-level functional blocks.
+  - `favorites/`: Logic for the scrolling favorites bar.
+  - `filters/`: The control bar for sorting games by league or status.
+  - `game-list/`: Handles the rendering of game sections (Live, Today, Upcoming) and the toggle between Grid and Table views.
+  - `settings/`: The modal for toggling visibility of specific leagues.
+  
+- **game-card/**: The core atomic unit of the application.
+  - Broken down into sub-components (`Header`, `TeamRow`, `Footer`, `Effects`) to keep the main card logic lightweight.
+  
+- **layout/**: Global application shell components (Header, Footer).
+
+### Hooks
+Business logic is extracted from the UI to ensure components remain purely presentational.
+
+- `useBasketballData`: Handles API polling, proxy fallbacks, and data transformation.
+- `useAppPersistence`: Manages local storage for view modes, favorites, and settings.
+- `useGameFiltering`: Contains the logic for sorting, grouping, and filtering raw game data based on user input.
 
 ## Tech Stack
 
-- **Engine:** React 18 + TypeScript + Vite
-- **Styling:** Tailwind CSS (Custom utility architecture)
-- **Animation:** Framer Motion (Layout transitions, entrance effects)
+- **Engine:** React 18, TypeScript, Vite
+- **Styling:** Tailwind CSS
+- **Animation:** Framer Motion
 - **Icons:** Lucide React
-
-## Architecture
-
-- **No UI Libraries:** Every component (Modals, Toggles, Cards) is custom-built for precise control over the "Noir" aesthetic.
-- **Performance:** Aggressive memoization and deep-comparison state updates to prevent unnecessary re-renders during data polling.
 
 ## Setup
 
@@ -29,10 +53,10 @@ A minimalist, high-performance basketball score tracker built for speed and aest
    ```bash
    npm install
    ```
-3. Start development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
 ---
-*Solution by Martin Čiurlionis*
+Solution by Martin Ciurlionis
