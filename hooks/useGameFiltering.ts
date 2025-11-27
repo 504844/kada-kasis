@@ -1,10 +1,40 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Game, FilterOption } from '../types';
 import { INITIAL_FILTERS } from '../constants';
 
+const FILTER_STORAGE_KEY = 'user_active_filters';
+
 export function useGameFiltering(games: Game[], enabledLeagues: string[]) {
-  const [filters, setFilters] = useState<FilterOption[]>(INITIAL_FILTERS);
+  // Initialize filters from LocalStorage or use defaults
+  const [filters, setFilters] = useState<FilterOption[]>(() => {
+    try {
+      const saved = localStorage.getItem(FILTER_STORAGE_KEY);
+      if (saved) {
+        const activeIds = JSON.parse(saved);
+        if (Array.isArray(activeIds)) {
+          return INITIAL_FILTERS.map(f => ({
+            ...f,
+            active: activeIds.includes(f.id)
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load filters from storage', e);
+    }
+    return INITIAL_FILTERS;
+  });
+
   const [activeTeamFilter, setActiveTeamFilter] = useState<string | null>(null);
+
+  // Persist filters whenever they change
+  useEffect(() => {
+    try {
+      const activeIds = filters.filter(f => f.active).map(f => f.id);
+      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(activeIds));
+    } catch (e) {
+      console.error('Failed to save filters', e);
+    }
+  }, [filters]);
 
   const handleToggleFilter = (id: string) => {
     setFilters(prev => prev.map(f => {

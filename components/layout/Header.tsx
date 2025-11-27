@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSettings, viewMode, setVie
                     className="group relative p-1.5 md:p-2 text-zinc-400 hover:text-white transition-colors"
                     aria-label="Nustatymai"
                 >
-                    <div className="absolute inset-0  rounded-md scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    <div className="absolute inset-0 bg-white/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <Settings size={20} strokeWidth={1.5} className="relative z-10" />
                 </button>
             </div>

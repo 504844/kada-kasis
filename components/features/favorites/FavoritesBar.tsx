@@ -65,7 +65,6 @@ const FavoriteCard: React.FC<{ game: Game }> = ({ game }) => {
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, filter: "blur(10px)" }}
       animate={{ opacity: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, filter: "blur(10px)" }}

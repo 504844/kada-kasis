@@ -37,6 +37,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             {leagueFilters.map((filter) => (
               <motion.button
                 key={filter.id}
+                type="button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
                 onClick={() => onToggleFilter(filter.id)}
                 whileTap={{ scale: 0.95 }}
                 className={`
@@ -60,6 +64,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             {statusFilters.map((filter) => (
             <motion.button
                 key={filter.id}
+                type="button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
                 onClick={() => onToggleFilter(filter.id)}
                 whileTap={{ scale: 0.95 }}
                 className={`
@@ -80,34 +88,38 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       <div className="flex flex-col gap-3 mt-2">
         
         {/* Active Filter Drilldown */}
-        {activeTeamFilter && (
-            <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center px-1"
-            >
-            <button 
-                onClick={onClearTeamFilter}
-                className="group relative flex items-center gap-3 pl-2 pr-4 py-2 bg-zinc-900/80 border border-white/10 rounded-full text-xs text-white hover:border-white/30 hover:bg-zinc-800 transition-all duration-300 backdrop-blur-md shadow-lg"
-            >
-                <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center overflow-hidden ring-1 ring-white/10">
-                    <img 
-                        src={activeTeamLogo || ""} 
-                        className="w-full h-full object-cover" 
-                        alt={activeTeamFilter} 
-                        onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                    />
-                </div>
-                <span className="font-bold tracking-wide">{activeTeamFilter}</span>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
-                <div className="bg-white/10 rounded-full p-0.5 group-hover:bg-white/20 transition-colors">
-                    <X size={10} className="text-zinc-400 group-hover:text-white transition-colors" />
-                </div>
-            </button>
-            </motion.div>
-        )}
+        <AnimatePresence>
+          {activeTeamFilter && (
+              <motion.div 
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 5 }}
+                  className="flex items-center px-1"
+              >
+              <button 
+                  type="button"
+                  onClick={onClearTeamFilter}
+                  className="group relative flex items-center gap-3 pl-2 pr-4 py-2 bg-zinc-900/80 border border-white/10 rounded-full text-xs text-white hover:border-white/30 hover:bg-zinc-800 transition-all duration-300 backdrop-blur-md shadow-lg"
+              >
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center overflow-hidden ring-1 ring-white/10">
+                      <img 
+                          src={activeTeamLogo || ""} 
+                          className="w-full h-full object-cover" 
+                          alt={activeTeamFilter} 
+                          onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                      />
+                  </div>
+                  <span className="font-bold tracking-wide">{activeTeamFilter}</span>
+                  <div className="w-px h-3 bg-white/10 mx-1"></div>
+                  <div className="bg-white/10 rounded-full p-0.5 group-hover:bg-white/20 transition-colors">
+                      <X size={10} className="text-zinc-400 group-hover:text-white transition-colors" />
+                  </div>
+              </button>
+              </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Favorite Teams List */}
         <AnimatePresence>
@@ -131,10 +143,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.2 }}
                                     className="flex items-center gap-2 pl-3 pr-2 py-1.5 bg-zinc-900/50 border border-white/5 rounded-lg group hover:border-white/20 transition-colors"
                                 >
                                     <span className="text-[10px] font-semibold text-zinc-300">{team}</span>
                                     <button 
+                                        type="button"
                                         onClick={() => onUnfavoriteTeam(team)}
                                         className="p-0.5 rounded hover:bg-white/10 text-zinc-500 hover:text-white transition-colors"
                                     >
